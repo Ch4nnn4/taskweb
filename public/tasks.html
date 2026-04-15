@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskWeb – Mis Tareas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="navbar">
+    <h2>TaskWeb</h2>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="nombreUsuario"></span>
+      <button onclick="logout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="tasks-container">
+
+    <div class="task-form">
+      <h3>Nueva tarea</h3>
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" id="titulo" placeholder="¿Qué tienes que hacer?">
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea id="descripcion" rows="2" placeholder="Detalles opcionales"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Prioridad</label>
+          <select id="prioridad">
+            <option value="baja">Baja</option>
+            <option value="media" selected>Media</option>
+            <option value="alta">Alta</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha límite</label>
+          <input type="date" id="fecha_limite">
+        </div>
+      </div>
+      <button class="btn" onclick="createTask()">Agregar tarea</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('pendientes')">Pendientes</button>
+      <button class="tab" onclick="showTab('completadas')">Completadas</button>
+    </div>
+
+    <div id="listaPendientes"></div>
+    <div id="listaCompletadas" style="display:none"></div>
+
+  </div>
+
+  <script src="js/tasks.js"></script>
+</body>
+</html>
