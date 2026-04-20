@@ -46,14 +46,14 @@ exports.login = (req, res) => {
       return res.status(401).json({ message: 'Credenciales incorrectas' });
     }
 
-    const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET, {
       expiresIn: '8h'
     });
 
     res.json({
       message: 'Login exitoso',
       token,
-      usuario: { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo }
+      usuario: { id: usuario.id, nombre: usuario.nombre, correo: usuario.correo, rol: usuario.rol }
     });
   });
 };

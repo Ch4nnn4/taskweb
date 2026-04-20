@@ -26,7 +26,11 @@ async function login() {
 
     localStorage.setItem('token', data.token);
     localStorage.setItem('usuario', JSON.stringify(data.usuario));
-    window.location.href = 'tasks.html';
+    if (data.usuario.rol === 'admin') {
+  window.location.href = 'admin.html';
+} else {
+  window.location.href = 'tasks.html';
+}
 
   } catch (err) {
     showError(errorMsg, 'Error al conectar con el servidor');
