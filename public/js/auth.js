@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api';
+const API = 'https://taskweb-re40.onrender.com/api';
 
 async function login() {
   const correo = document.getElementById('correo').value;
