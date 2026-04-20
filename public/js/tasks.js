@@ -83,26 +83,10 @@ async function createTask() {
   loadTasks();
 }
 
-async function toggleComplete(id, completada) {
-  const tarea = tareas.find(t => t.id === id);
-  await fetch(`${API}/tasks/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', authorization: token },
-    body: JSON.stringify({ ...tarea, completada })
-  });
-  loadTasks();
-}
-
-async function deleteTask(id) {
-  if (!confirm('¿Eliminar esta tarea?')) return;
-  await fetch(`${API}/tasks/${id}`, {
-    method: 'DELETE',
-    headers: { authorization: token }
-  });
-  loadTasks();
-}
+let tareaEnEdicion = null;
 
 function openEdit(id) {
+  tareaEnEdicion = id;
   const tarea = tareas.find(t => t.id === id);
   document.getElementById('titulo').value = tarea.titulo;
   document.getElementById('descripcion').value = tarea.descripcion || '';
@@ -113,6 +97,79 @@ function openEdit(id) {
   btn.textContent = 'Guardar cambios';
   btn.onclick = () => saveEdit(id);
 
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function saveEdit(id) {
+  const titulo = document.getElementById('titulo').value;
+  const descripcion = document.getElementById('descripcion').value;
+  const prioridad = document.getElementById('prioridad').value;
+  const fecha_limite = document.getElementById('fecha_limite').value;
+
+  if (!titulo) {
+    alert('El título es obligatorio');
+    return;
+  }
+
+  await fetch(`${API}/tasks/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', authorization: token },
+    body: JSON.stringify({ titulo, descripcion, prioridad, fecha_limite })
+  });
+
+  tareaEnEdicion = null;
+
+  const btn = document.querySelector('.task-form .btn');
+  btn.textContent = 'Agregar tarea';
+  btn.onclick = createTask;
+
+  document.getElementById('titulo').value = '';
+  document.getElementById('descripcion').value = '';
+  document.getElementById('fecha_limite').value = '';
+
+  loadTasks();
+}
+
+async function toggleComplete(id, completada) {
+  if (tareaEnEdicion !== null) {
+    alert('Debes guardar los cambios antes de completar una tarea.');
+    return;
+  }
+  const tarea = tareas.find(t => t.id === id);
+  await fetch(`${API}/tasks/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', authorization: token },
+    body: JSON.stringify({ ...tarea, completada })
+  });
+  loadTasks();
+}
+
+async function deleteTask(id) {
+  if (tareaEnEdicion !== null) {
+    alert('Debes guardar los cambios antes de eliminar una tarea.');
+    return;
+  }
+  if (!confirm('¿Eliminar esta tarea?')) return;
+  await fetch(`${API}/tasks/${id}`, {
+    method: 'DELETE',
+    headers: { authorization: token }
+  });
+  loadTasks();
+}
+
+function openEdit(id) {
+  tareaEnEdicion = id;
+  const tarea = tareas.find(t => t.id === id);
+  document.getElementById('titulo').value = tarea.titulo;
+  document.getElementById('descripcion').value = tarea.descripcion || '';
+  document.getElementById('prioridad').value = tarea.prioridad;
+  document.getElementById('fecha_limite').value = tarea.fecha_limite ? tarea.fecha_limite.split('T')[0] : '';
+
+  const btn = document.getElementById('btnAccion');
+  btn.textContent = 'Guardar cambios';
+  btn.onclick = () => saveEdit(id);
+
+  document.getElementById('btnCancelar').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -158,4 +215,17 @@ function logout() {
   window.location.href = 'index.html';
 }
 
+function cancelarEdicion() {
+  tareaEnEdicion = null;
+
+  const btn = document.getElementById('btnAccion');
+  btn.textContent = 'Agregar tarea';
+  btn.onclick = createTask;
+
+  document.getElementById('btnCancelar').style.display = 'none';
+  document.getElementById('titulo').value = '';
+  document.getElementById('descripcion').value = '';
+  document.getElementById('fecha_limite').value = '';
+  document.getElementById('prioridad').value = 'media';
+}
 loadTasks();
